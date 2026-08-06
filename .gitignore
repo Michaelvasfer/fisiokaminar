@@ -1,0 +1,8 @@
+# Credenciales y archivos con secretos (NUNCA subir)
+db.php
+fix_db_final.php
+setup_protocols.php
+test_db.php
+.env
+*.log
+node_modules/

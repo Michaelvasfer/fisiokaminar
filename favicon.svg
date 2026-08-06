@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#19cade"/>
+      <stop offset="100%" stop-color="#009fbf"/>
+    </linearGradient>
+    <linearGradient id="pulse" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity=".2"/>
+      <stop offset="50%" stop-color="#ffffff" stop-opacity=".95"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity=".2"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="116" fill="url(#bg)"/>
+  <rect x="88" y="92" width="184" height="184" rx="42" fill="#ffffff" opacity=".18"/>
+
+  <rect x="106" y="110" width="148" height="148" rx="34" fill="none" stroke="#ffffff" stroke-width="24"/>
+  <rect x="167" y="136" width="26" height="96" rx="10" fill="#ffffff"/>
+  <rect x="132" y="171" width="96" height="26" rx="10" fill="#ffffff"/>
+
+  <path d="M286 304c28-34 54-50 80-50 28 0 46 12 58 34 7 13 10 28 10 43 0 54-37 97-102 123" fill="none" stroke="#ffffff" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M164 360h44l22-34 28 64 34-84 20 54h42" fill="none" stroke="url(#pulse)" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
