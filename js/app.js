@@ -144,6 +144,42 @@ async function markAppointment(id, status) {
     }
 }
 
+// Reagendar: pide nueva fecha y hora, conserva la duración de la sesión.
+async function rescheduleAppointment(id, startTime, endTime) {
+    const nuevaFecha = prompt('Nueva fecha (AAAA-MM-DD), ej: 2026-08-12');
+    if (!nuevaFecha) return;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(nuevaFecha.trim())) {
+        if (window.showToast) showToast('Formato de fecha inválido. Usa AAAA-MM-DD', 'error');
+        return;
+    }
+    const nuevaHora = prompt('Nueva hora de inicio (24h), ej: 09:30');
+    if (!nuevaHora) return;
+    if (!/^\d{2}:\d{2}$/.test(nuevaHora.trim())) {
+        if (window.showToast) showToast('Formato de hora inválido. Usa HH:MM', 'error');
+        return;
+    }
+    const durMs = new Date('2000-01-01 ' + endTime) - new Date('2000-01-01 ' + startTime);
+    const fin = new Date(new Date('2000-01-01 ' + nuevaHora.trim()).getTime() + (durMs > 0 ? durMs : 3600000));
+    const endStr = String(fin.getHours()).padStart(2, '0') + ':' + String(fin.getMinutes()).padStart(2, '0');
+
+    try {
+        const res = await fetch('api/appointments.php', {
+            method: 'PUT',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ id, appointment_date: nuevaFecha.trim(), start_time: nuevaHora.trim(), end_time: endStr })
+        });
+        const json = await res.json();
+        if (json.success) {
+            if (window.showToast) showToast('Cita reagendada', 'success');
+            setTimeout(() => window.location.reload(), 900);
+        } else if (window.showToast) {
+            showToast(json.error || 'No se pudo reagendar', 'error');
+        }
+    } catch (e) {
+        if (window.showToast) showToast('Error de conexion', 'error');
+    }
+}
+
 async function deleteAppointment(id) {
     if (!confirm('Eliminar esta cita permanentemente?')) return;
 

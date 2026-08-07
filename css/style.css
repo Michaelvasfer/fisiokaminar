@@ -631,15 +631,15 @@ main > div, main > .animate-fade-in { padding: 0 0 1rem; }
 .btn-whatsapp-sm {
     background: linear-gradient(135deg, #25D366 0%, #128c7e 100%) !important;
     color: white !important;
-    width: 40px;
-    height: 40px;
+    width: 28px;
+    height: 28px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border-radius: 50% !important; /* Circular para destacar */
     border: none;
     cursor: pointer;
-    box-shadow: 0 3px 8px rgba(37, 211, 102, 0.4);
+    box-shadow: 0 1px 4px rgba(37, 211, 102, 0.3);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     pointer-events: auto; /* Asegurar que reciba clics */
     position: relative;
@@ -647,7 +647,7 @@ main > div, main > .animate-fade-in { padding: 0 0 1rem; }
 }
 
 .btn-whatsapp-sm:hover {
-    transform: translateY(-2px) rotate(10deg);
+    transform: translateY(-1px);
     box-shadow: 0 5px 12px rgba(37, 211, 102, 0.4);
 }
 
@@ -656,7 +656,7 @@ main > div, main > .animate-fade-in { padding: 0 0 1rem; }
 }
 
 .btn-whatsapp-sm i {
-    font-size: 1.15rem !important;
+    font-size: 0.85rem !important;
 }
 
 .patient-card {

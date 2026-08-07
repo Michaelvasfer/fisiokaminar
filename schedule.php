@@ -135,6 +135,10 @@ for ($i = 0; $i < 7; $i++) {
                     </div>
                     
                     <?php if(in_array($userRole, ['admin','receptionist'])): ?>
+                    <button onclick='event.stopPropagation(); rescheduleAppointment(<?= (int)$apt['id'] ?>, <?= json_encode(substr($apt['start_time'],0,5)) ?>, <?= json_encode(substr($apt['end_time'],0,5)) ?>)'
+                        class="btn-action-sm" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;">
+                        <span class="material-icons-outlined" style="font-size:1.1rem;">event</span> Reagendar
+                    </button>
                     <button onclick='event.stopPropagation(); markAppointment(<?= (int)$apt['id'] ?>, "cancelled")'
                         class="btn-action-sm btn-cancel">
                         <span class="material-icons-outlined" style="font-size:1.1rem;">close</span> Cancelar

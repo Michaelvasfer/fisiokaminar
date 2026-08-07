@@ -341,6 +341,22 @@ switch ($method) {
             http_response_code(403); echo json_encode(['success' => false, 'error' => 'Sin permiso para modificar citas']); exit;
         }
 
+        // Reagendar: nueva fecha y/u horario.
+        $newDate  = trim($body['appointment_date'] ?? '');
+        $newStart = trim($body['start_time'] ?? '');
+        $newEnd   = trim($body['end_time'] ?? '');
+        if ($newDate !== '' && $newStart !== '') {
+            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $newDate) || !preg_match('/^\d{2}:\d{2}/', $newStart)) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'error' => 'Formato de fecha/hora inválido']); exit;
+            }
+            if ($newEnd === '') $newEnd = date('H:i', strtotime($newStart) + 3600);
+            pdoQuery($pdo,
+                "UPDATE appointments SET appointment_date = ?, start_time = ?, end_time = ? WHERE id = ?",
+                [$newDate, $newStart, $newEnd, $id]
+            );
+        }
+
         if ($therapist_id > 0) {
             $therapist = pdoQuery($pdo, "SELECT id, is_active FROM users WHERE id = ? AND role = 'therapist' LIMIT 1", [$therapist_id])->fetch();
             if (!$therapist || (int)($therapist['is_active'] ?? 0) !== 1) {
