@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 require_once '../db.php';
 
 // Enlace de reseñas del centro de fisioterapia (Google Maps).
-define('GOOGLE_MAPS_URL', 'https://g.page/r/CbTevf1oXWGWEBM/review');
+define('GOOGLE_MAPS_URL', 'https://maps.app.goo.gl/n6VBumW1HMeVobWR7');
 
 function cargarEnvCron(): array {
     static $env = null;
