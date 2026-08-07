@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 require_once '../db.php';
 
 // Enlace de reseñas del centro de fisioterapia (Google Maps).
-define('GOOGLE_MAPS_URL', 'PENDIENTE-URL-MAPS');
+define('GOOGLE_MAPS_URL', 'https://g.page/r/CbTevf1oXWGWEBM/review');
 
 function cargarEnvCron(): array {
     static $env = null;
@@ -64,6 +64,12 @@ $ahora = new DateTime('now', new DateTimeZone('America/Lima'));
 $ahoraMin = (int)$ahora->format('H') * 60 + (int)$ahora->format('i');
 $hoy = $ahora->format('Y-m-d');
 
+// Pausa nocturna: no enviar recordatorios ni reseñas fuera de 8 a. m.–9 p. m.
+if ($ahoraMin < 8 * 60 || $ahoraMin >= 21 * 60) {
+    echo json_encode(['ok' => true, 'pausaNocturna' => true]);
+    exit;
+}
+
 $resultado = ['recordatorios' => ['enviados' => 0, 'fallidos' => 0], 'resenas' => ['enviadas' => 0, 'fallidas' => 0]];
 
 // --- Recordatorio 2 horas antes (ventana 105–135 min) ---
@@ -99,7 +105,6 @@ $completadas = pdoQuery($pdo,
 
 foreach ($completadas as $c) {
     try {
-        if (GOOGLE_MAPS_URL === 'PENDIENTE-URL-MAPS') break; // aún no configurado
         $fin = new DateTime($c['appointment_date'] . ' ' . substr($c['end_time'], 0, 5), new DateTimeZone('America/Lima'));
         $minDesdeFin = ($ahora->getTimestamp() - $fin->getTimestamp()) / 60;
         if ($minDesdeFin < 60 || $minDesdeFin > 48 * 60) continue;
