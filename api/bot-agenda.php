@@ -196,7 +196,13 @@ if ($accion === 'registrar') {
             "INSERT INTO users (role, name, dni, email, password, phone, patient_code, is_active) VALUES ('patient', ?, ?, ?, ?, ?, ?, 1)",
             [$nombre, $dni, $email, $pass, $telefono, $codigoNuevo]
         );
-        $paciente = ['id' => (int)$pdo->lastInsertId(), 'name' => $nombre];
+        // La auditoría de pdoQuery corrompe lastInsertId: se lee el id real por DNI.
+        $paciente = pdoQuery($pdo, "SELECT * FROM users WHERE dni = ? AND role = 'patient' LIMIT 1", [$dni])->fetch();
+        if (!$paciente) {
+            http_response_code(500);
+            echo json_encode(['error' => 'No se pudo crear el paciente']);
+            exit;
+        }
     }
 
     pdoQuery($pdo,
