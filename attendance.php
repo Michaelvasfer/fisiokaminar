@@ -178,7 +178,7 @@ try {
                             style="background:var(--success); color:white; border:none; padding:0.35rem 0.65rem; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:600; cursor:pointer;">
                             Presente
                         </button>
-                        <button onclick="event.stopPropagation(); rescheduleAppointment(<?= (int)$apt['id'] ?>, <?= json_encode(substr($apt['start_time'],0,5)) ?>, <?= json_encode(substr($apt['end_time'],0,5)) ?>)"
+                        <button onclick='event.stopPropagation(); rescheduleAppointment(<?= (int)$apt['id'] ?>, <?= json_encode(substr($apt['start_time'],0,5)) ?>, <?= json_encode(substr($apt['end_time'],0,5)) ?>)'
                             style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:0.35rem 0.65rem; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:600; cursor:pointer;">
                             Reagendar
                         </button>
