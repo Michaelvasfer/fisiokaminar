@@ -352,7 +352,7 @@ switch ($method) {
             }
             if ($newEnd === '') $newEnd = date('H:i', strtotime($newStart) + 3600);
             pdoQuery($pdo,
-                "UPDATE appointments SET appointment_date = ?, start_time = ?, end_time = ? WHERE id = ?",
+                "UPDATE appointments SET appointment_date = ?, start_time = ?, end_time = ?, rescheduled_at = NOW() WHERE id = ?",
                 [$newDate, $newStart, $newEnd, $id]
             );
         }

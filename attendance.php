@@ -22,6 +22,9 @@ try {
     if (!in_array('created_by', $columns)) {
         $pdo->exec("ALTER TABLE appointments ADD COLUMN created_by INT NULL DEFAULT NULL");
     }
+    if (!in_array('rescheduled_at', $columns)) {
+        $pdo->exec("ALTER TABLE appointments ADD COLUMN rescheduled_at DATETIME NULL DEFAULT NULL");
+    }
 } catch(Exception $e) {}
 
 // Estadisticas del dia (Resiliente)
@@ -56,9 +59,9 @@ try {
         LEFT JOIN users t ON t.id = a.therapist_id
         LEFT JOIN users cr ON cr.id = a.created_by
         LEFT JOIN users ci ON ci.id = a.checked_in_by
-        WHERE a.appointment_date = ?
+        WHERE a.appointment_date = ? OR DATE(a.rescheduled_at) = ?
         ORDER BY a.start_time DESC
-    ", [$today])->fetchAll();
+    ", [$today, $today])->fetchAll();
 } catch(Exception $e) {}
 
 // Cargar pacientes (Resiliente)
@@ -136,6 +139,9 @@ try {
                     'cancelled' => ['#fee2e2','#991b1b','Cancelada'],
                     default     => ['#e0f2fe','#0369a1','Agendada']
                 };
+                $esReagendada = !empty($apt['rescheduled_at'])
+                    && date('Y-m-d', strtotime($apt['rescheduled_at'])) === $today
+                    && $apt['appointment_date'] !== $today;
                 $attendanceDisplayName = $apt['therapist_name'] ?? 'Terapeuta';
                 if ((int)($apt['therapist_is_active'] ?? 1) !== 1) {
                     $attendanceDisplayName = $apt['created_by_name'] ?: ($apt['checked_in_by_name'] ?: ($userName ?? 'Usuario actual'));
@@ -164,11 +170,17 @@ try {
                     <?php endif; ?>
                 </div>
                 <div class="attendance-actions">
-                    <?php if($apt['status'] === 'scheduled'): ?>
+                    <?php if($esReagendada): ?>
+                    <span style="font-size:0.7rem; font-weight:700; color:#7c3aed;">REAGENDADO → <?= date('d/m', strtotime($apt['appointment_date'])) ?> <?= substr($apt['start_time'],0,5) ?></span>
+                    <?php elseif($apt['status'] === 'scheduled'): ?>
                     <div style="display:flex; gap:0.5rem;">
                         <button onclick="event.stopPropagation(); openAttendanceModal(<?= $apt['id'] ?>, <?= $apt['therapist_id'] ?: 'null' ?>)" 
                             style="background:var(--success); color:white; border:none; padding:0.35rem 0.65rem; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:600; cursor:pointer;">
                             Presente
+                        </button>
+                        <button onclick="event.stopPropagation(); rescheduleAppointment(<?= (int)$apt['id'] ?>, <?= json_encode(substr($apt['start_time'],0,5)) ?>, <?= json_encode(substr($apt['end_time'],0,5)) ?>)"
+                            style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:0.35rem 0.65rem; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:600; cursor:pointer;">
+                            Reagendar
                         </button>
                         <button onclick="event.stopPropagation(); quickAttendance(<?= $apt['id'] ?>, 'cancelled')" 
                             style="background:var(--border-color); color:var(--text-muted); border:none; padding:0.35rem 0.65rem; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:600; cursor:pointer;">
@@ -532,5 +544,20 @@ function appendWalkInAttendance(apt) {
     list.prepend(row);
 }
 </script>
+
+<!-- Modal Reagendar -->
+<div id="rescheduleModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:var(--card-bg,#fff);border-radius:16px;padding:1.25rem;width:300px;box-shadow:0 20px 50px rgba(0,0,0,0.25);">
+    <h3 style="margin:0 0 1rem;font-size:1rem;font-weight:600;">Reagendar cita</h3>
+    <label style="display:block;font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">Nueva fecha</label>
+    <input type="date" id="rescheduleDate" style="width:100%;padding:0.55rem;border:1px solid var(--border-color,#e5e7eb);border-radius:10px;margin-bottom:0.75rem;font-size:0.9rem;">
+    <label style="display:block;font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">Hora de inicio</label>
+    <input type="time" id="rescheduleTime" style="width:100%;padding:0.55rem;border:1px solid var(--border-color,#e5e7eb);border-radius:10px;margin-bottom:1rem;font-size:0.9rem;">
+    <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
+      <button onclick="cerrarReschedule()" style="padding:0.5rem 1rem;border-radius:10px;border:1px solid var(--border-color,#e5e7eb);background:none;cursor:pointer;font-size:0.85rem;">Cancelar</button>
+      <button onclick="confirmarReschedule()" style="padding:0.5rem 1rem;border-radius:10px;border:none;background:var(--primary-color,#0d9488);color:#fff;cursor:pointer;font-size:0.85rem;font-weight:600;">Reagendar</button>
+    </div>
+  </div>
+</div>
 
 <?php require_once 'includes/footer.php'; ?>
