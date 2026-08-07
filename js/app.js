@@ -144,29 +144,41 @@ async function markAppointment(id, status) {
     }
 }
 
-// Reagendar: pide nueva fecha y hora, conserva la duración de la sesión.
-async function rescheduleAppointment(id, startTime, endTime) {
-    const nuevaFecha = prompt('Nueva fecha (AAAA-MM-DD), ej: 2026-08-12');
-    if (!nuevaFecha) return;
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(nuevaFecha.trim())) {
-        if (window.showToast) showToast('Formato de fecha inválido. Usa AAAA-MM-DD', 'error');
-        return;
-    }
-    const nuevaHora = prompt('Nueva hora de inicio (24h), ej: 09:30');
-    if (!nuevaHora) return;
-    if (!/^\d{2}:\d{2}$/.test(nuevaHora.trim())) {
-        if (window.showToast) showToast('Formato de hora inválido. Usa HH:MM', 'error');
-        return;
-    }
+// Reagendar: modal con selector de fecha y hora (conserva la duración de la sesión).
+let _rescheduleId = null;
+let _rescheduleDurMs = 3600000;
+
+function rescheduleAppointment(id, startTime, endTime) {
+    _rescheduleId = id;
     const durMs = new Date('2000-01-01 ' + endTime) - new Date('2000-01-01 ' + startTime);
-    const fin = new Date(new Date('2000-01-01 ' + nuevaHora.trim()).getTime() + (durMs > 0 ? durMs : 3600000));
+    _rescheduleDurMs = durMs > 0 ? durMs : 3600000;
+    document.getElementById('rescheduleDate').value = '';
+    document.getElementById('rescheduleTime').value = '';
+    document.getElementById('rescheduleModal').style.display = 'flex';
+}
+
+function cerrarReschedule() {
+    document.getElementById('rescheduleModal').style.display = 'none';
+    _rescheduleId = null;
+}
+
+async function confirmarReschedule() {
+    const fecha = document.getElementById('rescheduleDate').value;
+    const hora = document.getElementById('rescheduleTime').value;
+    if (!_rescheduleId || !fecha || !hora) {
+        if (window.showToast) showToast('Elige fecha y hora', 'error');
+        return;
+    }
+    const fin = new Date(new Date('2000-01-01 ' + hora).getTime() + _rescheduleDurMs);
     const endStr = String(fin.getHours()).padStart(2, '0') + ':' + String(fin.getMinutes()).padStart(2, '0');
+    const id = _rescheduleId;
+    cerrarReschedule();
 
     try {
         const res = await fetch('api/appointments.php', {
             method: 'PUT',
             headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({ id, appointment_date: nuevaFecha.trim(), start_time: nuevaHora.trim(), end_time: endStr })
+            body: JSON.stringify({ id, appointment_date: fecha, start_time: hora, end_time: endStr })
         });
         const json = await res.json();
         if (json.success) {

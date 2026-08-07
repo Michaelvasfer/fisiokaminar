@@ -254,4 +254,19 @@ window.handleAppointmentDeleted = (id) => {
 };
 </script>
 
+<!-- Modal Reagendar -->
+<div id="rescheduleModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:var(--card-bg,#fff);border-radius:16px;padding:1.25rem;width:300px;box-shadow:0 20px 50px rgba(0,0,0,0.25);">
+    <h3 style="margin:0 0 1rem;font-size:1rem;font-weight:600;">Reagendar cita</h3>
+    <label style="display:block;font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">Nueva fecha</label>
+    <input type="date" id="rescheduleDate" style="width:100%;padding:0.55rem;border:1px solid var(--border-color,#e5e7eb);border-radius:10px;margin-bottom:0.75rem;font-size:0.9rem;">
+    <label style="display:block;font-size:0.78rem;color:var(--text-muted);margin-bottom:4px;">Hora de inicio</label>
+    <input type="time" id="rescheduleTime" style="width:100%;padding:0.55rem;border:1px solid var(--border-color,#e5e7eb);border-radius:10px;margin-bottom:1rem;font-size:0.9rem;">
+    <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
+      <button onclick="cerrarReschedule()" style="padding:0.5rem 1rem;border-radius:10px;border:1px solid var(--border-color,#e5e7eb);background:none;cursor:pointer;font-size:0.85rem;">Cancelar</button>
+      <button onclick="confirmarReschedule()" style="padding:0.5rem 1rem;border-radius:10px;border:none;background:var(--primary-color,#0d9488);color:#fff;cursor:pointer;font-size:0.85rem;font-weight:600;">Reagendar</button>
+    </div>
+  </div>
+</div>
+
 <?php require_once 'includes/footer.php'; ?>
