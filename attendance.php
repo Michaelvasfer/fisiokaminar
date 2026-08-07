@@ -173,18 +173,18 @@ try {
                     <?php if($esReagendada): ?>
                     <span style="font-size:0.7rem; font-weight:700; color:#7c3aed;">REAGENDADO → <?= date('d/m', strtotime($apt['appointment_date'])) ?> <?= substr($apt['start_time'],0,5) ?></span>
                     <?php elseif($apt['status'] === 'scheduled'): ?>
-                    <div style="display:flex; gap:0.5rem;">
-                        <button onclick="event.stopPropagation(); openAttendanceModal(<?= $apt['id'] ?>, <?= $apt['therapist_id'] ?: 'null' ?>)" 
-                            style="background:var(--success); color:white; border:none; padding:0.35rem 0.65rem; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:600; cursor:pointer;">
-                            Presente
+                    <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
+                        <button onclick="event.stopPropagation(); openAttendanceModal(<?= $apt['id'] ?>, <?= $apt['therapist_id'] ?: 'null' ?>)" title="Presente"
+                            style="background:var(--success); color:white; border:none; width:26px; height:26px; border-radius:50%; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;">
+                            <span class="material-icons-outlined" style="font-size:0.95rem;">check</span>
                         </button>
-                        <button onclick='event.stopPropagation(); rescheduleAppointment(<?= (int)$apt['id'] ?>, <?= json_encode(substr($apt['start_time'],0,5)) ?>, <?= json_encode(substr($apt['end_time'],0,5)) ?>)'
-                            style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:0.35rem 0.65rem; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:600; cursor:pointer;">
-                            Reagendar
+                        <button onclick='event.stopPropagation(); rescheduleAppointment(<?= (int)$apt['id'] ?>, <?= json_encode(substr($apt['start_time'],0,5)) ?>, <?= json_encode(substr($apt['end_time'],0,5)) ?>)' title="Reagendar"
+                            style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; width:26px; height:26px; border-radius:50%; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;">
+                            <span class="material-icons-outlined" style="font-size:0.9rem;">event</span>
                         </button>
-                        <button onclick="event.stopPropagation(); quickAttendance(<?= $apt['id'] ?>, 'cancelled')" 
-                            style="background:var(--border-color); color:var(--text-muted); border:none; padding:0.35rem 0.65rem; border-radius:var(--radius-sm); font-size:0.75rem; font-weight:600; cursor:pointer;">
-                            Falto
+                        <button onclick="event.stopPropagation(); quickAttendance(<?= $apt['id'] ?>, 'cancelled')" title="Falto"
+                            style="background:var(--border-color); color:var(--text-muted); border:none; width:26px; height:26px; border-radius:50%; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;">
+                            <span class="material-icons-outlined" style="font-size:0.9rem;">close</span>
                         </button>
                     </div>
                     <?php else: ?>
